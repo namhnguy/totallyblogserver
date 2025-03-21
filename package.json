@@ -24,6 +24,7 @@
     "body-parser": "^2.1.0",
     "cors": "^2.8.5",
     "express": "^5.0.1",
+    "imagekit": "^6.0.0",
     "mongoose": "^8.12.1",
     "svix": "^1.62.0"
   }

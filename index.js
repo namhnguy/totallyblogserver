@@ -13,6 +13,16 @@ app.use(clerkMiddleware());
 app.use("/webhooks", webHookRouter);
 app.use(express.json());
 
+// allow cross-origin requests
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
 app.use("/comments", commentRouter);
