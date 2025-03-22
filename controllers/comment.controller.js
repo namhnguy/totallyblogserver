@@ -1,15 +1,22 @@
 import Comment from "../models/comment.model.js";
 import User from "../models/user.model.js";
+import {
+  getPostCommentsService,
+  addCommentService,
+} from "../services/comment.service.js";
 
-export const getPostComments = async (req, res) => {
-  const comments = await Comment.find({ post: req.params.postId })
-    .populate("user", "username img")
-    .sort({ createdAt: -1 });
+export const getPostCommentsController = async (req, res) => {
+  const postId = req.params.postId;
 
-  res.json(comments);
+  if (!postId) {
+    return res.status(400).json("Post ID is required");
+  }
+
+  const comments = getPostCommentsService(postId);
+  res.status(200).json(comments);
 };
 
-export const addComment = async (req, res) => {
+export const addCommentController = async (req, res) => {
   const clerkUserId = req.auth.userId;
   const postId = req.params.postId;
 
@@ -17,20 +24,19 @@ export const addComment = async (req, res) => {
     return res.status(401).json("Not authenticated!");
   }
 
-  const user = await User.findOne({ clerkUserId });
+  if (!postId) {
+    return res.status(400).json("Post ID is required");
+  }
 
-  const newComment = new Comment({
-    ...req.body,
-    user: user._id,
-    post: postId,
-  });
-
-  const savedComment = await newComment.save();
-
-  res.status(201).json(savedComment);
+  try {
+    const savedComment = await addCommentService(clerkUserId, req.body, postId);
+    res.status(201).json(savedComment);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
 };
 
-export const deleteComment = async (req, res) => {
+export const deleteCommentController = async (req, res) => {
   const clerkUserId = req.auth.userId;
   const id = req.params.id;
 
