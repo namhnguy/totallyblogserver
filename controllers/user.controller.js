@@ -1,18 +1,24 @@
-import User from "../models/user.model.js";
+import {
+  getUserSavedPostsService,
+  savePostService,
+} from "../services/user.service.js";
 
-export const getUserSavedPosts = async (req, res) => {
+export const getUserSavedPostsController = async (req, res) => {
   const clerkUserId = req.auth.userId;
 
   if (!clerkUserId) {
     return res.status(401).json("Not authenticated!");
   }
 
-  const user = await User.findOne({ clerkUserId });
-
-  res.status(200).json(user.savedPosts);
+  try {
+    const savedPosts = await getUserSavedPostsService(clerkUserId);
+    res.status(200).json(savedPosts);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
 };
 
-export const savePost = async (req, res) => {
+export const savePostController = async (req, res) => {
   const clerkUserId = req.auth.userId;
   const postId = req.body.postId;
 
@@ -20,19 +26,14 @@ export const savePost = async (req, res) => {
     return res.status(401).json("Not authenticated!");
   }
 
-  const user = await User.findOne({ clerkUserId });
-
-  const isSaved = user.savedPosts.some((p) => p === postId);
-
-  if (!isSaved) {
-    await User.findByIdAndUpdate(user._id, {
-      $push: { savedPosts: postId },
-    });
-  } else {
-    await User.findByIdAndUpdate(user._id, {
-      $pull: { savedPosts: postId },
-    });
+  if (!postId) {
+    return res.status(400).json("Post ID is required");
   }
 
-  res.status(200).json(isSaved ? "Post unsaved" : "Post saved");
+  try {
+    const message = await savePostService(clerkUserId, postId);
+    res.status(200).json(message);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
 };
