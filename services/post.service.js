@@ -35,7 +35,7 @@ export const getPostsService = async (
     const userId = await findUserIdByAuthor(author);
 
     if (!userId) {
-      return res.status(404).json("No post found for this author");
+      throw new Error("User not found.");
     }
 
     query.user = userId._id;
@@ -105,7 +105,7 @@ export const deletePostService = async (clerkUserId, role, postId) => {
     throw new Error("User not found.");
   }
 
-  const deletedPost = null;
+  let deletedPost = null;
 
   if (role === "admin") {
     deletedPost = await adminDeletePost(postId);

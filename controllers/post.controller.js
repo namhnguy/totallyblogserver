@@ -16,17 +16,21 @@ export const getPostsController = async (req, res) => {
   const sortQuery = req.query.sort;
   const featured = req.query.featured;
 
-  const postData = await getPostsService(
-    page,
-    limit,
-    category,
-    author,
-    searchQuery,
-    sortQuery,
-    featured
-  );
+  try {
+    const postData = await getPostsService(
+      page,
+      limit,
+      category,
+      author,
+      searchQuery,
+      sortQuery,
+      featured
+    );
 
-  res.status(200).json(postData);
+    res.status(200).json(postData);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
 };
 
 export const getPostController = async (req, res) => {

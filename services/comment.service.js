@@ -28,7 +28,7 @@ export const deleteCommentService = async (clerkUserId, role, commentId) => {
     throw new Error("User not found");
   }
 
-  const deletedComment = null;
+  let deletedComment = null;
 
   if (role === "admin") {
     deletedComment = await adminDeleteComment(commentId);

@@ -11,7 +11,7 @@ export const getPostCommentsController = async (req, res) => {
     return res.status(400).json("Post ID is required");
   }
 
-  const comments = getPostCommentsService(postId);
+  const comments = await getPostCommentsService(postId);
   res.status(200).json(comments);
 };
 
