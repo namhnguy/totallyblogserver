@@ -1,8 +1,7 @@
-import Comment from "../models/comment.model.js";
-import User from "../models/user.model.js";
 import {
   getPostCommentsService,
   addCommentService,
+  deleteCommentService,
 } from "../services/comment.service.js";
 
 export const getPostCommentsController = async (req, res) => {
@@ -38,29 +37,29 @@ export const addCommentController = async (req, res) => {
 
 export const deleteCommentController = async (req, res) => {
   const clerkUserId = req.auth.userId;
-  const id = req.params.id;
+  const commentId = req.params.id;
 
   if (!clerkUserId) {
     return res.status(401).json("Not authenticated!");
   }
 
+  if (!commentId) {
+    return res.status(400).json("Comment ID is required");
+  }
+
   const role = req.auth.sessionClaims?.metadata?.role || "user";
 
-  if (role === "admin") {
-    await Comment.findByIdAndDelete(req.params.id);
-    return res.status(200).json("Comment has been deleted");
+  try {
+    const deletedComment = await deleteCommentService(
+      clerkUserId,
+      role,
+      commentId
+    );
+    if (!deletedComment) {
+      return res.status(403).json("Unable to delete comment");
+    }
+    res.status(200).json("Comment deleted");
+  } catch (error) {
+    res.status(500).json(error.message);
   }
-
-  const user = User.findOne({ clerkUserId });
-
-  const deletedComment = await Comment.findOneAndDelete({
-    _id: id,
-    user: user._id,
-  });
-
-  if (!deletedComment) {
-    return res.status(403).json("You can delete only your comment!");
-  }
-
-  res.status(200).json("Comment deleted");
 };

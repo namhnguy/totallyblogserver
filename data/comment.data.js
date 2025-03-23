@@ -19,3 +19,16 @@ export const saveComment = async (user, body, postId) => {
 
   return savedComment;
 };
+
+export const adminDeleteComment = async (commentId) => {
+  const deletedComment = await Comment.findByIdAndDelete({ _id: commentId });
+  return deletedComment;
+};
+
+export const userDeleteComment = async (commentId, userId) => {
+  const deletedComment = await Comment.findOneAndDelete({
+    _id: commentId,
+    user: userId,
+  });
+  return deletedComment;
+};

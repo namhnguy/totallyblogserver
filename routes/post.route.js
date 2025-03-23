@@ -1,21 +1,21 @@
 import express from "express";
 import {
-  getPosts,
-  getPost,
-  createPost,
-  deletePost,
-  uploadAuth,
-  featurePost,
+  getPostsController,
+  getPostController,
+  createPostController,
+  deletePostController,
+  uploadAuthController,
+  featurePostController,
 } from "../controllers/post.controller.js";
 import increaseVisit from "../middlewares/increaseVisit.js";
 
 const router = express.Router();
 
-router.get("/upload-auth", uploadAuth);
-router.get("/", getPosts);
-router.get("/:slug", increaseVisit, getPost);
-router.post("/", createPost);
-router.delete("/:id", deletePost);
-router.patch("/feature", featurePost);
+router.get("/upload-auth", uploadAuthController);
+router.get("/", getPostsController);
+router.get("/:slug", increaseVisit, getPostController);
+router.post("/", createPostController);
+router.delete("/:id", deletePostController);
+router.patch("/feature", featurePostController);
 
 export default router;
